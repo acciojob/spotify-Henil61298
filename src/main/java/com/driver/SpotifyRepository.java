@@ -13,7 +13,6 @@ public class SpotifyRepository {
     public HashMap<User, Playlist> creatorPlaylistMap;
     public HashMap<User, List<Playlist>> userPlaylistMap;
     public HashMap<Song, List<User>> songLikeMap;
-    public HashMap<Artist, Integer> likedArtist;
 
     public List<User> users;
     public List<Song> songs;
@@ -30,8 +29,6 @@ public class SpotifyRepository {
         creatorPlaylistMap = new HashMap<>();
         userPlaylistMap = new HashMap<>();
         songLikeMap = new HashMap<>();
-        likedArtist = new HashMap<>();
-
         users = new ArrayList<>();
         songs = new ArrayList<>();
         playlists = new ArrayList<>();
@@ -47,6 +44,7 @@ public class SpotifyRepository {
         }
         User user = new User(name, mobile);
         users.add(user);
+        userPlaylistMap.put(user, new ArrayList<>());
         return user;
     }
 
@@ -58,6 +56,7 @@ public class SpotifyRepository {
         }
         Artist a = new Artist(name);
         artists.add(a);
+        artistAlbumMap.put(a, new ArrayList<>());
         return a;
     }
 
@@ -79,16 +78,8 @@ public class SpotifyRepository {
         Album album = new Album(title);
         albums.add(album);
 
-        if (artistAlbumMap.containsKey(artist)){
-            List<Album> albumList = artistAlbumMap.get(artist);
-            albumList.add(album);
-            artistAlbumMap.put(artist, albumList);
-            return album;
-        }
-
-        List<Album> albumList = new ArrayList<>();
-        albumList.add(album);
-        artistAlbumMap.put(artist, albumList);
+        artistAlbumMap.get(artist).add(album);
+        albumSongMap.put(album,new ArrayList<>());
         return album;
     }
 
@@ -108,6 +99,7 @@ public class SpotifyRepository {
         }
 
         Song s = new Song(title, length);
+        s.setLikes(0);
         songs.add(s);
 
         if (albumSongMap.containsKey(album)){
