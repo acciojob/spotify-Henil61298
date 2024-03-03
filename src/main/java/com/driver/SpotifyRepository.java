@@ -221,35 +221,31 @@ public class SpotifyRepository {
     }
 
     public Song likeSong(String mobile, String songTitle) throws Exception {
-        User u = findUser(mobile);
-
-        Song song = null;
-        for (Song s : songs){
-            if (s.getTitle().equals(songTitle)){
-                song = s;
+        User user=null;
+        for(User user1:users){
+            if(user1.getMobile().equals(mobile)){
+                user=user1;
                 break;
             }
         }
+        if(user == null)
+            throw new Exception("User does not exist");
 
-        if (u == null || song == null){
-            throw new Exception("Song or user not found");
-        }
-
-        if (songLikeMap.containsKey(song)){
-            if (!songLikeMap.get(song).contains(u)){
-                List<User> userList = songLikeMap.get(song);
-                userList.add(u);
-                songLikeMap.put(song, userList);
+        Song song=null;
+        for(Song song1:songs){
+            if(song1.getTitle().equals(songTitle)){
+                song=song1;
+                break;
             }
         }
+        if(song == null)
+            throw new Exception("Song does not exist");
 
-        List<User> userList = new ArrayList<>();
-        userList.add(u);
-        songLikeMap.put(song, userList);
-
-        song.setLikes(song.getLikes() + 1);
-
-        songLikeMap.get(song).add(u);
+        if(songLikeMap.get(song).contains(user)){
+            return song;
+        }
+        song.setLikes(song.getLikes()+1);
+        songLikeMap.get(song).add(user);
 
         for(Album album:albumSongMap.keySet()){
             if(albumSongMap.get(album).contains(song)){
@@ -266,30 +262,26 @@ public class SpotifyRepository {
     }
 
     public String mostPopularArtist() {
-        int maxLike = Integer.MIN_VALUE;
-        Artist artist = null;
-        for (Artist a : artists){
-            if (a.getLikes() > maxLike){
-                maxLike = a.getLikes();
-                artist = a;
+        int countLikes=Integer.MIN_VALUE;
+        String popularArtist="";
+        for(Artist artist:artists){
+            if(artist.getLikes() > countLikes){
+                popularArtist=artist.getName();
+                countLikes=artist.getLikes();
             }
         }
-
-        assert artist != null;
-        return artist.getName();
+        return popularArtist;
     }
 
     public String mostPopularSong() {
-        int maxLike = Integer.MIN_VALUE;
-        Song song = null;
-        for (Song s : songs){
-            if (s.getLikes() > maxLike){
-                maxLike = s.getLikes();
-                song = s;
+        int countLikes=Integer.MIN_VALUE;
+        String popularSong="";
+        for(Song song:songs){
+            if(song.getLikes() > countLikes){
+                popularSong=song.getTitle();
+                countLikes=song.getLikes();
             }
         }
-
-        assert song != null;
-        return song.getTitle();
+        return popularSong;
     }
 }
